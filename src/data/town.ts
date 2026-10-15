@@ -17,17 +17,31 @@ export const places: Place[] = [
   { id: 'bottle', name: '漂流瓶', subtitle: '遇见一份小分享', description: '把日常和发现装进瓶子，等一个偶然的回应。', image: 'bottle-station.png', position: { x: 1460, y: 700 }, width: 275, height: 265, approach: { x: 1115, y: 706 }, color: '#83d8d1', number: '04', action: '投一只漂流瓶' },
 ];
 
-export type Outfit = 'player' | 'mushroom' | 'explorer' | 'campus' | 'kitty' | 'simpson' | 'batman' | 'jojo';
+export type Outfit = 'player' | 'custom' | 'mushroom' | 'explorer' | 'campus' | 'kitty' | 'simpson' | 'batman' | 'jojo';
 export const outfits: { id: Outfit; name: string; description: string }[] = [
+  { id: 'custom', name: '自己画的小龙', description: '亲手画的样子，独一无二' },
   { id: 'player', name: '晴天卫衣', description: '轻轻松松，出门散步' },
   { id: 'mushroom', name: '蘑菇漫游者', description: '背上背包，去找小惊喜' },
   { id: 'explorer', name: '灵感探险家', description: '下一站，会有什么呢' },
-  { id: 'campus', name: '校园蓝外套', description: '今天也元气满满' },
   { id: 'kitty', name: '猫猫头套小龙', description: '粉色蝴蝶结和软乎乎的猫耳' },
   { id: 'simpson', name: '辛普森小龙', description: '黄色刺猬头，今天有点搞怪' },
   { id: 'batman', name: '蝙蝠侠小龙', description: '披上黑色披风，夜巡广场' },
   { id: 'jojo', name: 'JOJO 星尘战士', description: '粗重墨线、夸张姿势和漫画气场' },
 ];
+
+// The player's hand-drawn dragon lives in localStorage as a PNG data URL, with a module-level cache.
+const customDragonKey = 'chuangzhi-custom-dragon';
+let customDragonCache: string | null | undefined;
+export const loadCustomDragon = (): string | null => {
+  if (customDragonCache === undefined) {
+    try { customDragonCache = localStorage.getItem(customDragonKey); } catch { customDragonCache = null; }
+  }
+  return customDragonCache;
+};
+export const saveCustomDragon = (dataUrl: string) => {
+  customDragonCache = dataUrl;
+  try { localStorage.setItem(customDragonKey, dataUrl); } catch { /* stay in memory only */ }
+};
 export const neighbors: { name: string; outfit: Outfit; position: Point; greeting: string; height: number }[] = [
   { name: '小蓝子', outfit: 'mushroom', position: { x: 662, y: 679 }, greeting: '要来参加今晚的心情散步吗？', height: 91 },
   { name: '阿柚', outfit: 'explorer', position: { x: 952, y: 754 }, greeting: '刚捞到一只写着小故事的漂流瓶～', height: 96 },

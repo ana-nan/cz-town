@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { asset, currentScene, outfits, getPlace, type Outfit, type Place, type Post } from './data/town';
+import { asset, currentScene, outfits, getPlace, loadCustomDragon, saveCustomDragon, type Outfit, type Place, type Post } from './data/town';
 import { startBgm, stopBgm } from './audio/bgm';
 import { usePosts } from './hooks/usePosts';
 import { useUnread } from './hooks/useUnread';
 import { DailyBriefing } from './components/DailyBriefing';
+import { DragonPainter } from './components/DragonPainter';
 import { GameScene } from './components/GameScene';
 import { BulletinBoard } from './components/BulletinBoard';
 import { PlayerDock } from './components/PlayerDock';
@@ -16,9 +17,13 @@ import { TownMap } from './components/TownMap';
 import { PlaceExperience } from './components/PlaceExperience';
 import { GameGlyph } from './components/GameGlyph';
 
-type Dialog = null | { type: 'briefing' | 'compose' | 'wardrobe' | 'map' | 'settings' | 'help' | 'board' } | { type: 'post'; id: string } | { type: 'place'; place: Place };
+type Dialog = null | { type: 'briefing' | 'compose' | 'wardrobe' | 'painter' | 'map' | 'settings' | 'help' | 'board' } | { type: 'post'; id: string } | { type: 'place'; place: Place };
 function initialOutfit(): Outfit {
-  try { const saved = localStorage.getItem('chuangzhi-outfit'); if (outfits.some(item => item.id === saved)) return saved as Outfit; } catch { /* use the default outfit */ }
+  try {
+    const saved = localStorage.getItem('chuangzhi-outfit');
+    if (saved === 'custom') return loadCustomDragon() ? 'custom' : 'player';
+    if (outfits.some(item => item.id === saved)) return saved as Outfit;
+  } catch { /* use the default outfit */ }
   return 'player';
 }
 
@@ -28,6 +33,7 @@ export default function App() {
   const [musicOn, setMusicOn] = useState(() => { try { return localStorage.getItem('chuangzhi-music') !== 'false'; } catch { return true; } });
   const [zoom, setZoom] = useState(1);
   const [outfit, setOutfit] = useState<Outfit>(initialOutfit);
+  const [customDragon, setCustomDragon] = useState<string | null>(loadCustomDragon);
   const [selected, setSelected] = useState<Place | null>(null);
   const [travel, setTravel] = useState<{ place: Place; sequence: number } | null>(null);
   const [dialog, setDialog] = useState<Dialog>({ type: 'briefing' });
@@ -85,7 +91,8 @@ export default function App() {
     {dialog?.type === 'compose' && <Modal title={selected?.action ?? '分享一件新鲜事'} kicker="A NOTE FROM YOU" onClose={closeDialog}><PostComposer initialCategory={selected?.id} onSubmit={(title, body, category, noticeType) => { createPost(title, body, category, noticeType); setSelected(getPlace(category)); setDialog({ type: 'place', place: getPlace(category) }); notify(category === 'bottle' ? '漂流瓶已经出发，期待一份回应。' : category === 'voice' ? '已用匿名身份发出。' : `已分享到「${getPlace(category).name}」`); }}/></Modal>}
     {dialog?.type === 'post' && activePost && <Modal title={activePost.title} kicker={getPlace(activePost.category).name} onClose={closeDialog}><PostDiscussion post={activePost} onReply={text => replyToPost(activePost.id, text)}/></Modal>}
     {dialog?.type === 'place' && <Modal title={dialog.place.name} kicker={dialog.place.subtitle} onClose={closeDialog}><PlaceExperience key={dialog.place.id} place={dialog.place} posts={posts} onPost={openPost} onCompose={() => { setSelected(dialog.place); setDialog({ type: 'compose' }); }}/></Modal>}
-    {dialog?.type === 'wardrobe' && <Modal wide title="今天，穿哪一套？" kicker="YOUR LITTLE WARDROBE" onClose={closeDialog}><p className="dialog-intro">每一种样子，都是你。</p><div className="outfit-grid">{outfits.map(item => <button key={item.id} className={`outfit-card ${outfit === item.id ? 'selected' : ''}`} aria-pressed={outfit === item.id} onClick={() => { setOutfit(item.id); notify(`已换上${item.name}`); }}><img src={asset(`characters/${item.id}.png`)} alt=""/><strong>{item.name}</strong><span>{item.description}</span><small>{outfit === item.id ? '✓ 正在穿' : '试试看'}</small></button>)}</div></Modal>}
+    {dialog?.type === 'wardrobe' && <Modal wide title="今天，穿哪一套？" kicker="YOUR LITTLE WARDROBE" onClose={closeDialog}><p className="dialog-intro">每一种样子，都是你。</p><div className="outfit-grid">{outfits.map(item => item.id === 'custom' ? <button key={item.id} className={`outfit-card outfit-card-draw ${outfit === item.id ? 'selected' : ''}`} aria-pressed={outfit === item.id} onClick={() => setDialog({ type: 'painter' })}>{customDragon ? <img src={customDragon} alt=""/> : <span className="draw-slot"><Icon name="plus" size={40}/></span>}<strong>{item.name}</strong><span>{item.description}</span><small>{outfit === item.id ? '✓ 正在穿' : customDragon ? '重新画一只' : '打开画板'}</small></button> : <button key={item.id} className={`outfit-card ${outfit === item.id ? 'selected' : ''}`} aria-pressed={outfit === item.id} onClick={() => { setOutfit(item.id); notify(`已换上${item.name}`); }}><img src={asset(`characters/${item.id}.png`)} alt=""/><strong>{item.name}</strong><span>{item.description}</span><small>{outfit === item.id ? '✓ 正在穿' : '试试看'}</small></button>)}</div></Modal>}
+    {dialog?.type === 'painter' && <Modal title="自己画一只小龙" kicker="DRAW YOUR DRAGON" onClose={closeDialog}><DragonPainter saved={customDragon} onSave={url => { saveCustomDragon(url); setCustomDragon(url); setOutfit('custom'); setDialog(null); notify('你的手绘小龙上线啦'); }} onWear={() => { setOutfit('custom'); setDialog(null); notify('已换上自己画的小龙'); }}/></Modal>}
     {dialog?.type === 'map' && <Modal wide title="小镇地图" kicker="CHUANGZHI TOWN · 世界导览" onClose={closeDialog}><TownMap onEnter={() => setDialog(null)}/></Modal>}
     {dialog?.type === 'settings' && <Modal title="小镇氛围" kicker="按你的节奏，慢慢逛" onClose={closeDialog}><SceneSettings night={night} onNight={setNight} birthday={birthdayVisible} onBirthday={() => setBirthdayVisible(v => !v)} music={musicOn} onMusic={() => setMusicOn(v => !v)} zoom={zoom} onZoom={setZoom}/></Modal>}
     {dialog?.type === 'help' && <Modal title="在小镇里，慢慢逛" kicker="MAKE YOURSELF AT HOME" onClose={closeDialog}><div className="help-steps"><p><b>01</b><span><strong>走到想去的地方</strong>点击广场地面，或按 WASD / 方向键移动。</span></p><p><b>02</b><span><strong>推开一扇门</strong>点建筑查看动态，靠近后按 E 进入讨论。</span></p><p><b>03</b><span><strong>和小伙伴碰个面</strong>点击小龙，或按空格打开表情轮盘；底部可以聊天和换装。</span></p><p><b>04</b><span><strong>留下你的小故事</strong>到消息墙发帖、回复，分享今天的新鲜事。</span></p></div></Modal>}
