@@ -1,0 +1,7 @@
+# 主版本昼夜模式
+
+白天恢复为 public/assets/plaza-integrated.png，夜间为 public/assets/plaza-night.png。夜间背景通过内置 imagegen 以白天地图为编辑目标生成，完整提示词如下。
+
+Use case: lighting-weather. Edit the supplied game map into its NIGHT counterpart. Strictly preserve the exact composition, building footprints, sunken plaza geometry, camera and object sizes. SAME cheerful polished rounded layered illustration style of original, not shadow theatre, not flat silhouettes, not painterly brushwork. Deep rich blue and violet starry sky, cool blue moonlit lake with delicate reflections, softly visible campus clocktower and hills. Pavilion, open microphone canopy, noticeboard and bottle kiosk are illuminated by welcoming warm honey-yellow lamps, string lights and gentle light pooling on nearby steps. Keep central floor readable with soft pale lavender-blue moonlight and warm cream edges, NOT too dark. A few subtle cyan glowing bottle accents; no oversaturated neon. Lush foliage in natural cool green with softly lit edges. Cozy social-game night atmosphere, warm interiors against blue night, bright friendly readable scene. Preserve exact existing signs 心情驿站, 匿名开麦, 小镇公告, 漂流瓶 on their physical wood signs. No new buildings, no islands, no machinery, no UI, no people, no characters, no text additions, no logos, no birthday props. Output same wide 16:9 map.
+
+场景设置中的昼夜按钮保存到 chuangzhi-light-mode；未保存时默认夜晚，便于预览本次新增场景。白天与夜晚共用移动地图、互动入口、帖子和装扮。已停用后来加入的卡纸前景和人物剪纸滤镜；其源文件保留。web-shadow 为独立支线。

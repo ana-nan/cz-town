@@ -1,0 +1,38 @@
+/* Restore the rounded illustrated world; lighting is supplied by two real assets. */
+.immersive-app .landscape{filter:none;transition:opacity 1.1s ease}
+.landscape-night{opacity:0;pointer-events:none}
+.is-night .landscape-night{opacity:1}
+.immersive-app .town-map{filter:none}
+.immersive-app .character-art,.immersive-app .portrait-art img,.immersive-app .wardrobe-slot img,.immersive-app .outfit-card img{filter:drop-shadow(1px 3px 1px #3f657528)}
+.immersive-app .branch{opacity:.8;filter:drop-shadow(0 8px 4px #2c56342b)}
+.immersive-app .paper-cloud img{filter:none}
+.paper-clouds{opacity:.3}
+.daylight-symbol{font-size:25px;color:#e7bc62;line-height:1}
+.daylight-toggle>span:first-child{font-size:17px;color:#f7d88b;line-height:1}
+.daylight-toggle small{color:#a4bbd2;font-size:8px;margin-left:3px}
+.scene-mode-tools .daylight-toggle{border-color:#8cacc1;background:#223d5de6}
+.scene-mode-tools .daylight-toggle:hover{border-color:#ffe6a1;background:#2b4b72}
+.is-night .daylight-symbol{color:#d6e9ff}
+.is-night .scene-shell{background:#101b49}
+.is-night .scene-viewport::after{background:linear-gradient(180deg,#06102e10,transparent 26%,transparent 74%,#060e2b20)}
+.is-night .character-art{filter:brightness(.96) saturate(.94) drop-shadow(0 1px 2px #9cbefb4d) drop-shadow(1px 4px 1px #07143455)}
+.is-night .player-ring{border-color:#a5eaff;background:#5bcfff20;box-shadow:0 0 12px #55bbff80,inset 0 0 8px #b0f5ff44}
+.is-night .character-name{color:#eff7ff;text-shadow:0 1px 3px #091a4f}
+.is-night .branch{filter:brightness(.45) saturate(.75) hue-rotate(15deg) drop-shadow(0 7px 3px #050c304d)}
+.is-night .napping-cat>img{filter:brightness(.7) saturate(.75) drop-shadow(0 3px 2px #08142d55)}
+.is-night .sleep-marks{color:#bed3f2}
+.is-night .paper-clouds{opacity:.13}
+.is-night .flying-bird{color:#b4cef1;opacity:.6}
+.is-night .butterfly i,.is-night .butterfly b{background:#c8ddf2;box-shadow:0 0 5px #8fcaff66}
+.is-night .lake-ripples i{background:#a9d4ff;box-shadow:0 0 5px #73b5ef66}
+.immersive-app .birthday-installation>img{filter:saturate(1.08) brightness(1.04) drop-shadow(0 4px 2px #70573825);transition:filter 1s}
+.is-night .birthday-installation>img{filter:brightness(.86) saturate(.84) drop-shadow(0 0 9px #f5c97933) drop-shadow(0 4px 2px #06102f55)}
+.night-atmosphere{position:absolute;inset:0;pointer-events:none;z-index:3}
+.night-atmosphere>i{position:absolute;width:2px;height:2px;background:#f1f8ff;border-radius:50%;box-shadow:0 0 6px #c5e0ff;animation:night-star 5.5s ease-in-out infinite}
+.night-atmosphere>i:nth-child(4n){width:3px;height:3px}
+.night-fireflies{position:absolute;inset:0}
+.night-fireflies b{position:absolute;width:3px;height:3px;background:#ffe3a2;border-radius:50%;box-shadow:0 0 7px 2px #f9d27555;animation:night-float 8s ease-in-out infinite;opacity:0}
+@keyframes night-star{0%,100%{opacity:.25;scale:.8}50%{opacity:1;scale:1.2}}
+@keyframes night-float{0%,100%{opacity:0;transform:translate(0,8px)}30%{opacity:.7}70%{opacity:.5;transform:translate(14px,-20px)}}
+@media(max-width:700px){.scene-mode-tools{gap:4px}.scene-mode-tools button{padding:5px 7px;font-size:9px}.daylight-toggle small{display:none}}
+@media(prefers-reduced-motion:reduce){.immersive-app .landscape{transition:none}.night-atmosphere>i,.night-fireflies b{animation:none;opacity:.65}}
